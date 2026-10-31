@@ -11,6 +11,15 @@ window.App = {
     // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
+        let reloadingForWorker = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          // The LibreOffice runtime needs response isolation headers supplied
+          // by the worker. Reload once when a new worker takes control.
+          if (!reloadingForWorker) {
+            reloadingForWorker = true;
+            window.location.reload();
+          }
+        });
         navigator.serviceWorker.register('/sw.js').then(reg => {
           console.log('[App] SW registered:', reg.scope);
         }).catch(err => console.warn('[App] SW failed:', err));
@@ -97,6 +106,10 @@ window.App = {
     if (page === 'image' && !ImageTool._initialized) {
       ImageTool.init();
       ImageTool._initialized = true;
+    }
+    if (page === 'document' && !DocumentTool._initialized) {
+      DocumentTool.init();
+      DocumentTool._initialized = true;
     }
 
     // Update URL without reload

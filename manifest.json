@@ -1,7 +1,7 @@
 {
   "name": "ToolKit - Daily Tools",
   "short_name": "ToolKit",
-  "description": "Your all-in-one daily toolkit: Password Manager, Color Picker, QR Code Generator, and Image Compressor.",
+  "description": "Your all-in-one daily toolkit: Password Manager, QR, image, and private document conversion.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#111215",

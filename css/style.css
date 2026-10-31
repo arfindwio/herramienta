@@ -1534,6 +1534,72 @@ input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
 }
 
 /* ==============================
+   17. DOCUMENT CONVERTER
+   ============================== */
+.tool-card-icon.document { background: #252831; color: #e6e8ee; }
+.document-privacy-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 14px;
+  padding: 11px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.document-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.document-mode {
+  min-height: 42px;
+  padding: 7px 4px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: 600 12px/1.2 inherit;
+  cursor: pointer;
+}
+.document-mode.active { background: #2b2e37; color: var(--color-text-primary); border-color: var(--color-border-hover); }
+.document-card { display: flex; flex-direction: column; gap: 12px; }
+.document-upload {
+  padding: 26px 16px;
+  text-align: center;
+  border: 2px dashed var(--color-border-hover);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.document-upload:hover, .document-upload.drag-over { background: #252832; border-color: var(--color-text-secondary); }
+.document-upload-icon { font-size: 32px; margin-bottom: 6px; }
+.document-upload-title { color: var(--color-text-primary); font-size: 14px; font-weight: 700; margin: 0 0 4px; }
+.document-upload-hint, .document-disclaimer, .document-status { color: var(--color-text-muted); font-size: 12px; line-height: 1.45; margin: 0; }
+.document-file-list { display: flex; flex-direction: column; gap: 7px; }
+.document-file-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+.document-file-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.document-file-size { color: var(--color-text-muted); flex-shrink: 0; }
+.document-status:not(:empty) { padding: 8px 10px; background: var(--color-surface-2); border-radius: var(--radius-sm); }
+.document-reset { margin-top: -4px; }
+.document-disclaimer { margin: 12px 2px 0; }
+
+/* ==============================
    17. SETTINGS PANEL
    ============================== */
 .settings-overlay {

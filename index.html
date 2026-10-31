@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#111215">
-  <meta name="description" content="ToolKit - Alat harian lengkap: Password Manager, Color Picker, QR Code Generator, dan Image Compressor.">
-  <meta name="keywords" content="toolkit, password manager, color picker, qr code, image compressor,">
+  <meta name="description" content="ToolKit - Alat harian lengkap dengan konverter foto, Word, dan PDF yang diproses di perangkat.">
+  <meta name="keywords" content="toolkit, password manager, color picker, qr code, image compressor, photo to pdf, word to pdf, pdf to word">
   <meta name="author" content="ToolKit">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
 
   <!-- Open Graph -->
   <meta property="og:title" content="ToolKit - Daily Tools">
-  <meta property="og:description" content="Password Manager, Color Picker, QR Code, & Image Compressor">
+  <meta property="og:description" content="Password, QR, image, and private document conversion tools">
   <meta property="og:type" content="website">
   <meta property="og:image" content="/icons/icon-512.png">
 
@@ -41,6 +41,10 @@
   <!-- QR Code Libraries (loaded from CDN, cached by SW) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <!-- Document conversion libraries. Files are processed locally in the browser. -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
 </head>
 <body>
   <!-- ================================
@@ -90,6 +94,12 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         </div>
         <span data-i18n="image">Gambar</span>
+      </button>
+      <button class="drawer-nav-item" data-page="document" aria-label="Document Converter">
+        <div class="drawer-nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+        </div>
+        <span data-i18n="document">Dokumen</span>
       </button>
     </div>
     <button class="drawer-install-btn hidden" id="install-pwa-btn">
@@ -202,6 +212,17 @@
           <div class="tool-card-arrow" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
+        </button>
+
+        <button class="tool-card" data-page="document" aria-label="Document Converter tool">
+          <div class="tool-card-icon document">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+          </div>
+          <div class="tool-card-content">
+            <div class="tool-card-title" data-i18n="documentTitle">Konverter Dokumen</div>
+            <div class="tool-card-desc" data-i18n="documentDesc">Foto, Word, dan PDF — diproses di perangkat</div>
+          </div>
+          <div class="tool-card-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </button>
       </div>
     </main>
@@ -639,6 +660,45 @@
       </div>
     </section>
 
+    <!-- ================================
+         PAGE: DOCUMENT CONVERTER
+         ================================ -->
+    <section class="page" id="page-document" aria-label="Document Converter">
+      <div class="page-header">
+        <div class="page-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div>
+          <h2 class="page-header-title" data-i18n="documentTitle">Konverter Dokumen</h2>
+          <p class="page-header-desc" data-i18n="documentDesc">Foto, Word, dan PDF — diproses di perangkat</p>
+        </div>
+      </div>
+
+      <div class="document-privacy-note"><span aria-hidden="true">&#128274;</span> <span data-i18n="documentPrivacy">File tidak diunggah. Konversi dilakukan langsung di perangkat Anda.</span></div>
+      <div class="document-modes" role="tablist" aria-label="Document conversion mode">
+        <button class="document-mode active" data-document-mode="image" role="tab" aria-selected="true">Foto → PDF</button>
+        <button class="document-mode" data-document-mode="word" role="tab" aria-selected="false">Word → PDF</button>
+        <button class="document-mode" data-document-mode="pdf" role="tab" aria-selected="false">PDF → Word</button>
+      </div>
+
+      <div class="card document-card">
+        <div class="document-upload" id="document-upload" role="button" tabindex="0">
+          <div class="document-upload-icon" aria-hidden="true">&#128196;</div>
+          <p class="document-upload-title" id="document-upload-title">Pilih foto</p>
+          <p class="document-upload-hint" id="document-upload-hint">JPG, PNG, WebP · Anda dapat memilih beberapa foto</p>
+          <input class="hidden" id="document-file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+        </div>
+        <div class="document-file-list hidden" id="document-file-list" aria-live="polite"></div>
+        <p class="document-status" id="document-status" aria-live="polite"></p>
+        <button class="btn btn-primary btn-full" id="document-convert-btn" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span id="document-convert-label">Buat PDF</span>
+        </button>
+        <button class="btn btn-secondary btn-full document-reset hidden" id="document-reset-btn">Pilih file lain</button>
+      </div>
+      <p class="document-disclaimer" id="document-disclaimer">Setiap foto menjadi satu halaman dengan rasio asli. Foto ditampilkan penuh tanpa bingkai putih atau pemotongan.</p>
+    </section>
+
   </div><!-- /app-container -->
 
   <!-- ================================
@@ -674,6 +734,10 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       </span>
       <span class="nav-item-label" data-i18n="image">Gambar</span>
+    </button>
+    <button class="nav-item" data-page="document" id="nav-document" aria-label="Documents">
+      <span class="nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+      <span class="nav-item-label" data-i18n="document">Dokumen</span>
     </button>
   </nav>
 
@@ -733,13 +797,13 @@
           </div>
           <div style="font-size:17px;font-weight:700;color:var(--color-text-primary)">ToolKit</div>
           <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px" data-i18n="appTagline">Alat Harianmu</div>
-          <div style="font-size:12px;color:var(--color-text-muted);margin-top:8px">v1.0.0 · 100% Offline PWA</div>
+          <div style="font-size:12px;color:var(--color-text-muted);margin-top:8px">v1.3.0 · Private PWA</div>
           <div style="font-size:11px;color:var(--color-text-muted);margin-top:4px">Data tersimpan di perangkat Anda</div>
         </div>
       </div>
     </div>
     <div class="settings-footer">
-      ToolKit · v1.0.0<br>
+      ToolKit · v1.3.0<br>
       No data leaves your device
     </div>
   </aside>
@@ -758,6 +822,7 @@
   <script src="js/tools/color.js"></script>
   <script src="js/tools/qr.js"></script>
   <script src="js/tools/image.js"></script>
+  <script src="js/tools/document.js"></script>
   <script src="js/app.js"></script>
 
   <!-- Apply active lang button on load -->

@@ -1,7 +1,7 @@
 // ToolKit PWA - Service Worker
-// Version: 1.1.0
+// Version: 1.7.0
 
-const CACHE_NAME = 'toolkit-v1.1.0';
+const CACHE_NAME = 'toolkit-v1.7.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -13,9 +13,12 @@ const STATIC_ASSETS = [
   '/js/tools/color.js',
   '/js/tools/qr.js',
   '/js/tools/image.js',
+  '/js/tools/document.js',
+  '/vendor/libreoffice/browser.mjs',
+  '/vendor/libreoffice/browser.worker.global.js',
+  '/vendor/libreoffice/wasm/soffice.js',
+  '/vendor/libreoffice/wasm/soffice.worker.js',
   '/js/storage.js',
-  '/lib/qrcode.min.js',
-  '/lib/jsqr.min.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];
@@ -74,7 +77,7 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         }).catch(() => {});
-        return cachedResponse;
+        return withIsolationHeaders(cachedResponse);
       }
 
       // Not in cache - fetch from network
@@ -85,7 +88,7 @@ self.addEventListener('fetch', (event) => {
             cache.put(event.request, responseClone);
           });
         }
-        return networkResponse;
+        return withIsolationHeaders(networkResponse);
       }).catch(() => {
         // Offline fallback
         if (event.request.destination === 'document') {
@@ -95,6 +98,20 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// LibreOffice WASM uses SharedArrayBuffer. Returning these headers from the
+// service worker makes the installed PWA cross-origin isolated after reload.
+function withIsolationHeaders(response) {
+  if (!response) return response;
+  const headers = new Headers(response.headers);
+  headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
 
 // Background sync for future use
 self.addEventListener('message', (event) => {

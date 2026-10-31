@@ -15,6 +15,7 @@ window.i18n = {
       color: 'Color',
       qr: 'QR Code',
       image: 'Image',
+      document: 'Documents',
       // Home
       welcomeTitle: 'Daily Toolkit',
       welcomeSubtitle: 'All your essential tools, offline & private.',
@@ -86,6 +87,9 @@ window.i18n = {
       savedSpace: 'Saved',
       downloadBtn: 'Download',
       compressBtn: 'Compress',
+      documentTitle: 'Document Converter',
+      documentDesc: 'Photos, Word, and PDF — processed on your device',
+      documentPrivacy: 'Files are not uploaded. Conversion happens directly on your device.',
       // Common
       copied: 'Copied!',
       saved: 'Saved!',
@@ -121,6 +125,7 @@ window.i18n = {
       color: 'Warna',
       qr: 'Kode QR',
       image: 'Gambar',
+      document: 'Dokumen',
       // Home
       welcomeTitle: 'Toolkit Harian',
       welcomeSubtitle: 'Semua alat penting, offline & privat.',
@@ -192,6 +197,9 @@ window.i18n = {
       savedSpace: 'Dihemat',
       downloadBtn: 'Unduh',
       compressBtn: 'Kompres',
+      documentTitle: 'Konverter Dokumen',
+      documentDesc: 'Foto, Word, dan PDF — diproses di perangkat',
+      documentPrivacy: 'File tidak diunggah. Konversi dilakukan langsung di perangkat Anda.',
       // Common
       copied: 'Disalin!',
       saved: 'Disimpan!',
