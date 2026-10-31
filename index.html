@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#111215">
+  <meta name="description" content="ToolKit - Alat harian lengkap: Password Manager, Color Picker, QR Code Generator, dan Image Compressor.">
+  <meta name="keywords" content="toolkit, password manager, color picker, qr code, image compressor,">
+  <meta name="author" content="ToolKit">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ToolKit">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ToolKit - Daily Tools">
+  <meta property="og:description" content="Password Manager, Color Picker, QR Code, & Image Compressor">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/icons/icon-512.png">
+
+  <title>ToolKit - Daily Tools</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- QR Code Libraries (loaded from CDN, cached by SW) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+  <!-- ================================
+       OVERLAYS
+       ================================ -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <div class="settings-overlay" id="settings-overlay"></div>
+
+  <!-- ================================
+       SIDE DRAWER (Mobile Nav)
+       ================================ -->
+  <nav class="side-drawer" id="side-drawer" aria-label="Side navigation">
+    <div class="drawer-header">
+      <div class="drawer-app-name" style="display:flex;align-items:center;gap:10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span>ToolKit</span>
+      </div>
+      <div class="drawer-tagline" data-i18n="appTagline">Alat Harianmu</div>
+    </div>
+    <div class="drawer-nav">
+      <button class="drawer-nav-item active" data-page="home" aria-label="Home">
+        <div class="drawer-nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <span data-i18n="home">Beranda</span>
+      </button>
+      <button class="drawer-nav-item" data-page="password" aria-label="Password Manager">
+        <div class="drawer-nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <span data-i18n="password">Sandi</span>
+      </button>
+      <button class="drawer-nav-item" data-page="color" aria-label="Color Picker">
+        <div class="drawer-nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+        </div>
+        <span data-i18n="color">Warna</span>
+      </button>
+      <button class="drawer-nav-item" data-page="qr" aria-label="QR Code">
+        <div class="drawer-nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <span data-i18n="qr">Kode QR</span>
+      </button>
+      <button class="drawer-nav-item" data-page="image" aria-label="Image Compressor">
+        <div class="drawer-nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <span data-i18n="image">Gambar</span>
+      </button>
+    </div>
+    <button class="drawer-install-btn hidden" id="install-pwa-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span data-i18n="installApp">Install App</span>
+    </button>
+  </nav>
+
+  <!-- ================================
+       MAIN APP CONTAINER
+       ================================ -->
+  <div class="app-container">
+
+    <!-- TOP HEADER -->
+    <header class="app-header" role="banner">
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div class="app-logo">
+          <div class="app-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <span class="app-logo-text" data-i18n="appName">ToolKit</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="connectivity-indicator" title="Online" class="online"></span>
+        <button class="header-icon-btn" id="settings-btn" aria-label="Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================================
+         PAGE: HOME
+         ================================ -->
+    <main class="page active" id="page-home" role="main">
+      <div class="home-hero">
+        <h1 class="home-hero-title" data-i18n="welcomeTitle">Toolkit Harian</h1>
+        <p class="home-hero-sub" data-i18n="welcomeSubtitle">Semua alat penting, offline & privat.</p>
+        <div class="home-badges">
+          <span class="badge badge-offline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            100% Offline
+          </span>
+          <span class="badge badge-private">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            No Server
+          </span>
+          <span class="badge badge-free">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Free Forever
+          </span>
+        </div>
+      </div>
+
+      <div class="tools-grid">
+        <button class="tool-card" data-page="password" aria-label="Password Manager tool">
+          <div class="tool-card-icon password">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="tool-card-content">
+            <div class="tool-card-title" data-i18n="passwordTitle">Manajer Kata Sandi</div>
+            <div class="tool-card-desc" data-i18n="passwordDesc">Buat kata sandi aman & simpan secara lokal</div>
+          </div>
+          <div class="tool-card-arrow" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </button>
+
+        <button class="tool-card" data-page="color" aria-label="Color Picker tool">
+          <div class="tool-card-icon color">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+          </div>
+          <div class="tool-card-content">
+            <div class="tool-card-title" data-i18n="colorTitle">Pemilih Warna</div>
+            <div class="tool-card-desc" data-i18n="colorDesc">Pilih, konversi, dan buat palet warna</div>
+          </div>
+          <div class="tool-card-arrow" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </button>
+
+        <button class="tool-card" data-page="qr" aria-label="QR Code tool">
+          <div class="tool-card-icon qr">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <div class="tool-card-content">
+            <div class="tool-card-title" data-i18n="qrTitle">Kode QR</div>
+            <div class="tool-card-desc" data-i18n="qrDesc">Buat dan pindai kode QR</div>
+          </div>
+          <div class="tool-card-arrow" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </button>
+
+        <button class="tool-card" data-page="image" aria-label="Image Compressor tool">
+          <div class="tool-card-icon image">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="tool-card-content">
+            <div class="tool-card-title" data-i18n="imageTitle">Kompresor Gambar</div>
+            <div class="tool-card-desc" data-i18n="imageDesc">Kompres gambar offline tanpa unggah</div>
+          </div>
+          <div class="tool-card-arrow" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </button>
+      </div>
+    </main>
+
+    <!-- ================================
+         PAGE: PASSWORD MANAGER
+         ================================ -->
+    <section class="page" id="page-password" aria-label="Password Manager">
+      <div class="page-header">
+        <div class="page-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div>
+          <h2 class="page-header-title" data-i18n="passwordTitle">Manajer Kata Sandi</h2>
+          <p class="page-header-desc" data-i18n="passwordDesc">Buat kata sandi aman & simpan secara lokal</p>
+        </div>
+      </div>
+
+      <!-- Generator -->
+      <div class="card">
+        <div class="card-title">Generator</div>
+
+        <div class="pw-output-wrap">
+          <textarea class="pw-output" id="pw-output" readonly aria-label="Generated password" rows="2" placeholder="Klik 'Buat' untuk mulai..."></textarea>
+          <button class="pw-copy-btn-inside" id="pw-quick-copy-btn" title="Salin Kata Sandi" aria-label="Copy password">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>
+
+        <!-- Strength indicator -->
+        <div class="pw-strength-wrap">
+          <div class="pw-strength-track">
+            <div class="pw-strength-bar weak" id="pw-strength-bar" style="width:0%"></div>
+          </div>
+          <span id="pw-strength-label" class="pw-strength-text weak"></span>
+        </div>
+
+        <!-- Length -->
+        <div class="form-group">
+          <label class="form-label" data-i18n="lengthLabel" for="pw-length">Panjang</label>
+          <div class="range-row">
+            <input class="range-slider" type="range" id="pw-length" min="6" max="64" value="16" aria-label="Password length">
+            <span class="range-value" id="pw-length-val">16</span>
+          </div>
+        </div>
+
+        <!-- Character sets -->
+        <div class="form-group">
+          <div class="pw-checkboxes-grid">
+            <label class="checkbox-item">
+              <input type="checkbox" id="pw-upper" checked>
+              <span class="checkbox-label" data-i18n="includeUpper">Huruf Besar (A-Z)</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="pw-lower" checked>
+              <span class="checkbox-label" data-i18n="includeLower">Huruf Kecil (a-z)</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="pw-numbers" checked>
+              <span class="checkbox-label" data-i18n="includeNumbers">Angka (0-9)</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" id="pw-symbols">
+              <span class="checkbox-label" data-i18n="includeSymbols">Simbol (!@#$)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="btn-group">
+          <button class="btn btn-primary" id="pw-generate-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            <span data-i18n="generateBtn">Buat</span>
+          </button>
+          <button class="btn btn-secondary" id="pw-copy-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span data-i18n="copyBtn">Salin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Save form -->
+      <div class="card">
+        <div class="card-title" data-i18n="saveBtn">Simpan</div>
+        <div class="form-group">
+          <input class="input-field" type="text" id="pw-label" data-i18n-placeholder="labelPlaceholder" placeholder="Label (mis. Gmail)" aria-label="Password label">
+        </div>
+        <div class="form-group">
+          <input class="input-field" type="text" id="pw-username" data-i18n-placeholder="usernameLabel" placeholder="Username / Email (opsional)" aria-label="Username or email">
+        </div>
+        <button class="btn btn-outline btn-full" id="pw-save-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <span data-i18n="saveBtn">Simpan</span>
+        </button>
+      </div>
+
+      <!-- Saved passwords list -->
+      <div class="card">
+        <div class="flex justify-between items-center mb-16" style="margin-bottom:12px">
+          <span class="card-title" style="margin:0" data-i18n="savedPasswords">Kata Sandi Tersimpan</span>
+        </div>
+        <div class="input-with-btn" style="margin-bottom:14px">
+          <input type="search" id="pw-search" placeholder="Cari..." aria-label="Search passwords">
+          <div class="input-action-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+        </div>
+        <div id="pw-saved-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <span>Belum ada kata sandi tersimpan.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================
+         PAGE: COLOR PICKER
+         ================================ -->
+    <section class="page" id="page-color" aria-label="Color Picker">
+      <div class="page-header">
+        <div class="page-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+        </div>
+        <div>
+          <h2 class="page-header-title" data-i18n="colorTitle">Pemilih Warna</h2>
+          <p class="page-header-desc" data-i18n="colorDesc">Pilih, konversi, dan buat palet warna</p>
+        </div>
+      </div>
+
+      <!-- Color picker -->
+      <div class="card">
+        <div class="color-preview-swatch" id="color-preview-swatch" style="background:#2b2d35;color:#f4f4f6;" aria-label="Color preview">
+          #2B2D35
+        </div>
+
+        <div class="color-picker-wrap">
+          <input type="color" id="color-picker-input" value="#2b2d35" aria-label="Color picker">
+          <div class="input-with-btn" style="flex:1">
+            <input type="text" id="color-hex-input" value="#2B2D35" maxlength="7" aria-label="HEX color value">
+            <button class="input-action-btn" id="copy-hex-btn" title="Copy HEX">HEX</button>
+          </div>
+        </div>
+
+        <div class="color-values-grid">
+          <div class="color-value-item">
+            <span class="color-value-label" data-i18n="rgbLabel">RGB</span>
+            <div class="color-value-field">
+              <input type="text" id="color-rgb-value" readonly aria-label="RGB value">
+              <button id="copy-rgb-btn" title="Copy RGB">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="color-value-item">
+            <span class="color-value-label" data-i18n="hslLabel">HSL</span>
+            <div class="color-value-field">
+              <input type="text" id="color-hsl-value" readonly aria-label="HSL value">
+              <button id="copy-hsl-btn" title="Copy HSL">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="color-value-item">
+            <span class="color-value-label" data-i18n="cmykLabel">CMYK</span>
+            <div class="color-value-field">
+              <input type="text" id="color-cmyk-value" readonly aria-label="CMYK value">
+              <button id="copy-cmyk-btn" title="Copy CMYK">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-outline btn-full" id="color-save-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <span data-i18n="saveBtn">Simpan Warna</span>
+        </button>
+      </div>
+
+      <!-- Palette generator -->
+      <div class="card">
+        <div class="card-title" data-i18n="generatePalette">Buat Palet</div>
+        <div class="form-group">
+          <select class="input-field" id="palette-type" aria-label="Palette type">
+            <option value="complementary" data-i18n="complementary">Komplementer</option>
+            <option value="analogous" data-i18n="analogous">Analog</option>
+            <option value="triadic" data-i18n="triadic">Triadik</option>
+            <option value="tetradic" data-i18n="tetradic">Tetradik</option>
+            <option value="monochromatic" data-i18n="monochromatic">Monokromatik</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full" id="color-gen-palette-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+          <span data-i18n="generatePalette">Buat Palet</span>
+        </button>
+        <div class="palette-result" id="palette-result" style="margin-top:14px"></div>
+      </div>
+
+      <!-- Saved colors -->
+      <div class="card">
+        <div class="card-title" data-i18n="savedColors">Warna Tersimpan</div>
+        <div class="color-chips-wrap" id="color-saved-list">
+          <div class="empty-state" style="grid-column:1/-1">
+            <div class="empty-state-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <span>Belum ada warna tersimpan.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================
+         PAGE: QR CODE
+         ================================ -->
+    <section class="page" id="page-qr" aria-label="QR Code Generator and Scanner">
+      <div class="page-header">
+        <div class="page-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div>
+          <h2 class="page-header-title" data-i18n="qrTitle">Kode QR</h2>
+          <p class="page-header-desc" data-i18n="qrDesc">Buat dan pindai kode QR</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="qr-tabs" role="tablist">
+        <button class="qr-tab active" id="qr-tab-generate" role="tab" aria-selected="true" data-i18n="qrGenerate">Buat</button>
+        <button class="qr-tab" id="qr-tab-scan" role="tab" aria-selected="false" data-i18n="qrScan">Pindai</button>
+      </div>
+
+      <!-- GENERATE PANEL -->
+      <div id="qr-generate-panel" role="tabpanel">
+        <div class="card">
+          <textarea
+            class="input-field"
+            id="qr-text-input"
+            rows="3"
+            data-i18n-placeholder="qrInput"
+            placeholder="Masukkan teks atau URL..."
+            aria-label="QR code text input"
+            style="resize:vertical"
+          ></textarea>
+
+          <!-- QR Preview -->
+          <div class="qr-canvas-container" id="qr-canvas-container" aria-label="QR Code preview">
+            <div class="qr-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <p>QR Code akan muncul di sini</p>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="qr-options-row">
+            <div class="form-group" style="margin:0">
+              <label class="form-label" for="qr-size" data-i18n="qrSize">Ukuran</label>
+              <div class="range-row">
+                <input class="range-slider" type="range" id="qr-size" min="100" max="400" value="200" aria-label="QR code size">
+                <span class="range-value" id="qr-size-val">200px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="qr-color-pickers">
+            <div class="qr-color-group">
+              <label for="qr-fg-color" data-i18n="qrColor">Warna</label>
+              <input type="color" id="qr-fg-color" value="#000000" aria-label="QR foreground color">
+            </div>
+            <div class="qr-color-group">
+              <label for="qr-bg-color" data-i18n="qrBg">Latar</label>
+              <input type="color" id="qr-bg-color" value="#ffffff" aria-label="QR background color">
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="qr-download-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="downloadQR">Unduh QR</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SCAN PANEL -->
+      <div id="qr-scan-panel" class="hidden" role="tabpanel">
+        <div class="card">
+          <div class="btn-group" style="margin-bottom:14px">
+            <button class="btn btn-primary" id="qr-camera-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span data-i18n="scanFromCamera">Gunakan Kamera</span>
+            </button>
+            <button class="btn btn-secondary" id="qr-file-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span data-i18n="scanFromFile">Unggah Gambar</span>
+            </button>
+          </div>
+          <input type="file" id="qr-file-input" accept="image/*" class="hidden" aria-label="Upload image for QR scanning">
+
+          <!-- Camera area -->
+          <div class="qr-camera-area hidden" id="qr-camera-area">
+            <video id="qr-video" playsinline muted aria-label="Camera feed"></video>
+            <div class="qr-scan-frame" aria-hidden="true"></div>
+          </div>
+          <button class="btn btn-danger btn-full hidden mt-8" id="qr-stop-camera-btn" style="margin-top:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+            <span>Stop Camera</span>
+          </button>
+
+          <!-- Scan result -->
+          <div class="qr-scan-result-box hidden" id="qr-scan-result-box">
+            <div class="qr-scan-result-label" data-i18n="scanResult">Hasil Pindai</div>
+            <p class="qr-scan-result-text" id="qr-scan-result"></p>
+            <div class="btn-group">
+              <button class="btn btn-primary btn-sm" onclick="QRTool.copyResult()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span data-i18n="copyBtn">Salin</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="QRTool.openResult()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Open URL
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR History -->
+      <div class="card">
+        <div class="flex justify-between items-center" style="margin-bottom:12px">
+          <span class="card-title" style="margin:0" data-i18n="qrHistory">Riwayat</span>
+          <button class="btn btn-sm btn-secondary" id="qr-clear-history-btn" data-i18n="clear">Bersihkan</button>
+        </div>
+        <div id="qr-history-list">
+          <p class="empty-state"><span>📋</span><br>Belum ada riwayat QR.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================
+         PAGE: IMAGE COMPRESSOR
+         ================================ -->
+    <section class="page" id="page-image" aria-label="Image Compressor">
+      <div class="page-header">
+        <div class="page-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div>
+          <h2 class="page-header-title" data-i18n="imageTitle">Kompresor Gambar</h2>
+          <p class="page-header-desc" data-i18n="imageDesc">Kompres gambar offline tanpa unggah</p>
+        </div>
+      </div>
+
+      <!-- Drop zone -->
+      <div class="img-drop-zone" id="img-drop-zone" role="button" tabindex="0" aria-label="Drop image or click to select">
+        <div class="img-drop-zone-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <p class="img-drop-zone-text" data-i18n="dropImage">Letakkan gambar di sini atau klik untuk pilih</p>
+        <p class="img-drop-zone-hint">JPG, PNG, WebP · Max 50MB</p>
+        <input type="file" id="img-file-input" accept="image/*" class="hidden" aria-label="Select image file">
+      </div>
+
+      <!-- Workspace -->
+      <div class="img-workspace hidden" id="img-workspace">
+
+        <!-- Preview pair -->
+        <div class="img-preview-pair">
+          <div class="img-preview-panel">
+            <div class="img-preview-header">
+              <span class="img-preview-label" data-i18n="originalSize">Asli</span>
+              <span class="img-preview-size" id="img-original-size">-</span>
+            </div>
+            <img class="img-preview-img" id="img-original-preview" alt="Original image">
+            <p class="img-preview-dims" id="img-original-dims">-</p>
+            <p class="img-preview-name" id="img-original-name">-</p>
+          </div>
+          <div class="img-preview-panel">
+            <div class="img-preview-header">
+              <span class="img-preview-label" data-i18n="compressedSize">Terkompresi</span>
+              <span class="img-preview-size" id="img-compressed-size">-</span>
+            </div>
+            <img class="img-preview-img" id="img-compressed-preview" alt="Compressed image">
+            <p class="img-preview-dims" id="img-compressed-dims">-</p>
+            <p class="img-savings positive" id="img-savings">-</p>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label" for="img-quality" data-i18n="qualityLabel">Kualitas</label>
+            <div class="range-row">
+              <input class="range-slider" type="range" id="img-quality" min="10" max="100" value="80" aria-label="Image quality">
+              <span class="range-value" id="img-quality-val">80%</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label" for="img-max-width" data-i18n="maxWidthLabel">Lebar Maks (px)</label>
+              <input class="input-field" type="number" id="img-max-width" placeholder="Auto" min="1" aria-label="Max width">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label" for="img-max-height" data-i18n="maxHeightLabel">Tinggi Maks (px)</label>
+              <input class="input-field" type="number" id="img-max-height" placeholder="Auto" min="1" aria-label="Max height">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="img-format" data-i18n="formatLabel">Format Output</label>
+            <select class="input-field" id="img-format" aria-label="Output format">
+              <option value="image/jpeg">JPEG</option>
+              <option value="image/webp">WebP</option>
+              <option value="image/png">PNG</option>
+            </select>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" id="img-compress-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              <span data-i18n="compressBtn">Kompres</span>
+            </button>
+            <button class="btn btn-primary" id="img-download-btn" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span data-i18n="downloadBtn">Unduh</span>
+            </button>
+            <button class="btn btn-secondary" id="img-clear-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              <span data-i18n="clear">Bersihkan</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /app-container -->
+
+  <!-- ================================
+       BOTTOM NAVIGATION
+       ================================ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+    <button class="nav-item active" data-page="home" id="nav-home" aria-label="Home">
+      <span class="nav-item-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </span>
+      <span class="nav-item-label" data-i18n="home">Beranda</span>
+    </button>
+    <button class="nav-item" data-page="password" id="nav-password" aria-label="Password">
+      <span class="nav-item-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </span>
+      <span class="nav-item-label" data-i18n="password">Sandi</span>
+    </button>
+    <button class="nav-item" data-page="color" id="nav-color" aria-label="Color">
+      <span class="nav-item-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+      </span>
+      <span class="nav-item-label" data-i18n="color">Warna</span>
+    </button>
+    <button class="nav-item" data-page="qr" id="nav-qr" aria-label="QR Code">
+      <span class="nav-item-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </span>
+      <span class="nav-item-label" data-i18n="qr">QR</span>
+    </button>
+    <button class="nav-item" data-page="image" id="nav-image" aria-label="Image">
+      <span class="nav-item-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </span>
+      <span class="nav-item-label" data-i18n="image">Gambar</span>
+    </button>
+  </nav>
+
+  <!-- ================================
+       SETTINGS PANEL (Right slide)
+       ================================ -->
+  <aside class="settings-panel" id="settings-panel" aria-label="Settings">
+    <div class="settings-header">
+      <h2 class="settings-title" data-i18n="settings">Pengaturan</h2>
+      <button class="icon-btn" id="settings-close" aria-label="Close settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="settings-body">
+
+      <!-- Language -->
+      <div class="settings-section">
+        <div class="settings-section-title" data-i18n="language">Bahasa</div>
+        <div class="settings-item">
+          <span class="settings-item-label" style="display:flex;align-items:center;gap:8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span>Language / Bahasa</span>
+          </span>
+          <div class="lang-toggle">
+            <button class="lang-btn" id="lang-id">ID</button>
+            <button class="lang-btn" id="lang-en">EN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data management -->
+      <div class="settings-section">
+        <div class="settings-section-title">Data</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-secondary btn-full" id="export-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span data-i18n="exportData">Ekspor Data</span>
+          </button>
+          <button class="btn btn-secondary btn-full" id="import-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="importData">Impor Data</span>
+          </button>
+          <input type="file" id="import-input" accept=".json" class="hidden" aria-label="Import backup file">
+          <button class="btn btn-danger btn-full" id="clear-all-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            <span data-i18n="clearAllData">Hapus Semua Data</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="settings-section">
+        <div class="settings-section-title" data-i18n="about">Tentang</div>
+        <div style="background:var(--color-surface-2);border-radius:var(--radius-md);padding:18px;text-align:center;border:1px solid var(--color-border)">
+          <div style="width:48px;height:48px;margin:0 auto 10px;background:#252731;border:1px solid #363945;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#f4f4f6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div style="font-size:17px;font-weight:700;color:var(--color-text-primary)">ToolKit</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px" data-i18n="appTagline">Alat Harianmu</div>
+          <div style="font-size:12px;color:var(--color-text-muted);margin-top:8px">v1.0.0 · 100% Offline PWA</div>
+          <div style="font-size:11px;color:var(--color-text-muted);margin-top:4px">Data tersimpan di perangkat Anda</div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-footer">
+      ToolKit · v1.0.0<br>
+      No data leaves your device
+    </div>
+  </aside>
+
+  <!-- ================================
+       TOAST NOTIFICATION
+       ================================ -->
+  <div id="toast" role="alert" aria-live="polite"></div>
+
+  <!-- ================================
+       SCRIPTS
+       ================================ -->
+  <script src="js/i18n.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/tools/password.js"></script>
+  <script src="js/tools/color.js"></script>
+  <script src="js/tools/qr.js"></script>
+  <script src="js/tools/image.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Apply active lang button on load -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('toolkit-lang') || 'id';
+      document.getElementById('lang-' + lang).classList.add('active');
+      document.getElementById('lang-' + (lang === 'id' ? 'en' : 'id')).classList.remove('active');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "toolkit-pwa",
+  "version": "1.0.0",
+  "description": "ToolKit - Daily Tools PWA: Password Manager, Color Picker, QR Code, Image Compressor",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -p 3000 --no-clipboard",
+    "serve": "npx serve . -p 8080",
+    "generate-icons": "node scripts/generate-icons.js",
+    "install-icon-deps": "npm install sharp"
+  },
+  "keywords": ["pwa", "toolkit", "offline", "password-manager", "color-picker", "qr-code", "image-compressor"],
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.3"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
